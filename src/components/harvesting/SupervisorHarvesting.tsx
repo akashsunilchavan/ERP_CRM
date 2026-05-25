@@ -96,14 +96,14 @@ export const SupervisorHarvesting = () => {
     }, [filterLabours, filterRoom, filteredSupervisors, filterStartDate, filterEndDate]);
     return (
         <div className="p-0">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center justify-between mb-4">
                 <Title order={3}>Harvesting Records</Title>
                 <Button onClick={() => setOpened(true)} color="green" leftSection={<FontAwesomeIcon icon={faPlus} />}>
                     Add Harvesting
                 </Button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="p-4 bg-white border border-gray-200 shadow-sm rounded-xl">
                 <CustomTable
                     data={harvestData}
                     setData={setHarvestData}
@@ -113,8 +113,8 @@ export const SupervisorHarvesting = () => {
                     tableHeadData={tableColumns}
                     tableBody={() =>
                         harvestData?.data?.map((obj: any, index: number) => (
-                            <tr key={obj.id} className="border-b hover:bg-gray-50 transition">
-                                <td className="py-6 px-5">{index + 1}</td>
+                            <tr key={obj.id} className="transition border-b hover:bg-gray-50">
+                                <td className="px-5 py-6">{index + 1}</td>
                                 <td>{obj.date ?? '—'}</td>
 
                                 <td>{obj.labour ? `${obj.labour.first_name} ${obj.labour.last_name}` : '—'}</td>
@@ -136,7 +136,7 @@ export const SupervisorHarvesting = () => {
                                 </td>
 
                                 <td className="px-3 py-2 text-center">
-                                    <div className="flex justify-center items-center gap-2">
+                                    <div className="flex items-center justify-center gap-2">
                                         <button onClick={() => console.log('Edit', obj.id)} className="text-blue-600 hover:text-blue-800" title="Edit">
                                             <FontAwesomeIcon icon={faEdit} />{' '}
                                         </button>
@@ -160,7 +160,7 @@ export const SupervisorHarvesting = () => {
                                 onChange={(e) => {
                                     setfilterStartDate(e?.target?.value);
                                 }}
-                                className="me-2 mb-5"
+                                className="mb-5 me-2"
                             />
                             <CustomDateInput
                                 label="Select End Date"
@@ -169,7 +169,7 @@ export const SupervisorHarvesting = () => {
                                 onChange={(e) => {
                                     setfilterEndDate(e?.target?.value);
                                 }}
-                                className="me-2 mb-5"
+                                className="mb-5 me-2"
                             />
                             <CustomSelectInput
                                 label="Select Room"
@@ -180,7 +180,7 @@ export const SupervisorHarvesting = () => {
                                 onChange={(value) => {
                                     setfilterRoom(value);
                                 }}
-                                className="me-2 mb-5"
+                                className="mb-5 me-2"
                             />
                             {/* <CustomSelectInput
                                 label="Select Supervisor"
@@ -192,7 +192,7 @@ export const SupervisorHarvesting = () => {
                                     setfilterSupervisors(value);
                                 }}
                                 name="filteredSupervisors"
-                                className="me-2 mb-5"
+                                className="mb-5 me-2"
                             /> */}
                             <div className="flex flex-end">
                                 <CustomSelectInput
@@ -209,7 +209,7 @@ export const SupervisorHarvesting = () => {
                                     onChange={(value) => {
                                         setfilterLabours(value);
                                     }}
-                                    className="me-2 mb-5"
+                                    className="mb-5 me-2"
                                 />
 
                                 <Button

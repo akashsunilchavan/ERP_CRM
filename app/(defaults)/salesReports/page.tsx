@@ -1,10 +1,10 @@
-import LeadManagement from '@/src/components/addSupervisor/LeadManagement';
+import ReportManagment from '@/src/components/reports/ReportManagment';
 import React from 'react';
 
 const page = () => {
     return (
         <div>
-            <LeadManagement />
+            <ReportManagment />
         </div>
     );
 };

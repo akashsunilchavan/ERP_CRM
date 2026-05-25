@@ -231,14 +231,14 @@ const ComponentsAuthRegisterForm = () => {
     };
 
     return (
-        <div className="min-h-screen inset-0 overflow-hidden">
-            <div className="min-h-screen w-full flex flex-col md:flex-row">
+        <div className="inset-0 min-h-screen overflow-hidden">
+            <div className="flex flex-col w-full min-h-screen md:flex-row">
                 {!isMobile && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
-                        className="hidden md:flex flex-1 relative"
+                        className="relative flex-1 hidden md:flex"
                         style={{
                             backgroundImage: "url('/assets/images/businessWorld/joinUs.jpg')",
                             backgroundSize: 'cover',
@@ -249,29 +249,29 @@ const ComponentsAuthRegisterForm = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
                         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
                             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="max-w-md">
-                                <Title order={1} className="text-5xl font-bold mb-6" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+                                <Title order={1} className="mb-6 text-5xl font-bold" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
                                     Join Our Platform
                                 </Title>
-                                <p className="text-xl opacity-90 mb-10" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
+                                <p className="mb-10 text-xl opacity-90" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
                                     Create your account and start your journey with us today.
                                 </p>
 
                                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
                                     <motion.div variants={itemVariants} className="flex items-center">
-                                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4 border border-white/30">
-                                            <span className="text-white font-bold text-lg">1</span>
+                                        <div className="flex items-center justify-center w-12 h-12 mr-4 border rounded-full bg-white/20 backdrop-blur-sm border-white/30">
+                                            <span className="text-lg font-bold text-white">1</span>
                                         </div>
                                         <p className="text-lg">Secure authentication</p>
                                     </motion.div>
                                     <motion.div variants={itemVariants} className="flex items-center">
-                                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4 border border-white/30">
-                                            <span className="text-white font-bold text-lg">2</span>
+                                        <div className="flex items-center justify-center w-12 h-12 mr-4 border rounded-full bg-white/20 backdrop-blur-sm border-white/30">
+                                            <span className="text-lg font-bold text-white">2</span>
                                         </div>
                                         <p className="text-lg">Personalized dashboard</p>
                                     </motion.div>
                                     <motion.div variants={itemVariants} className="flex items-center">
-                                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4 border border-white/30">
-                                            <span className="text-white font-bold text-lg">3</span>
+                                        <div className="flex items-center justify-center w-12 h-12 mr-4 border rounded-full bg-white/20 backdrop-blur-sm border-white/30">
+                                            <span className="text-lg font-bold text-white">3</span>
                                         </div>
                                         <p className="text-lg">24/7 customer support</p>
                                     </motion.div>
@@ -280,14 +280,14 @@ const ComponentsAuthRegisterForm = () => {
                         </div>
                     </motion.div>
                 )}
-                <div className="flex-1 flex items-center justify-center p-6 overflow-auto">
+                <div className="flex items-center justify-center flex-1 p-6 overflow-auto">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-xl mx-auto">
                         <Card
                             withBorder
                             shadow="xl"
                             radius="xl"
                             padding="xl"
-                            className="bg-white/90 backdrop-blur-sm dark:bg-gray-800/90 relative"
+                            className="relative bg-white/90 backdrop-blur-sm dark:bg-gray-800/90"
                             style={{
                                 borderColor: colors.from_blue_600,
                                 boxShadow: `0 10px 30px -10px ${colors.primaryLight}40`,
@@ -296,10 +296,10 @@ const ComponentsAuthRegisterForm = () => {
                         >
                             <LoadingOverlay visible={submitAPIStatus.loading} overlayProps={{ blur: 2 }} loaderProps={{ color: colors.primary, type: 'bars' }} />
 
-                            <Box className="text-center mb-8">
+                            <Box className="mb-8 text-center">
                                 <Title
                                     order={2}
-                                    className="text-3xl font-bold text-gray-800 dark:text-white mb-2"
+                                    className="mb-2 text-3xl font-bold text-gray-800 dark:text-white"
                                     style={{
                                         background: `linear-gradient(45deg, ${colors.from_blue_600}, ${colors.to_indigo_700})`,
                                         WebkitBackgroundClip: 'text',
@@ -378,8 +378,8 @@ const ComponentsAuthRegisterForm = () => {
                                         />
                                     </motion.div>
                                     <motion.div variants={itemVariants}>
-                                        <div className="mb-1 mt-1">
-                                            <label className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-1 block">
+                                        <div className="mt-1 mb-1">
+                                            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                                 Phone Number <span className="text-red-500">*</span>
                                             </label>
                                             <PhoneInput
@@ -431,7 +431,7 @@ const ComponentsAuthRegisterForm = () => {
                                                 <button
                                                     type="button"
                                                     onClick={togglePasswordVisibility}
-                                                    className="text-gray-500 hover:text-indigo-600 transition-colors"
+                                                    className="text-gray-500 transition-colors hover:text-indigo-600"
                                                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                                                 >
                                                     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
@@ -462,7 +462,7 @@ const ComponentsAuthRegisterForm = () => {
                                                 <button
                                                     type="button"
                                                     onClick={toggleConfirmPasswordVisibility}
-                                                    className="text-gray-500 hover:text-indigo-600 transition-colors"
+                                                    className="text-gray-500 transition-colors hover:text-indigo-600"
                                                     aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                                                 >
                                                     <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
@@ -491,7 +491,7 @@ const ComponentsAuthRegisterForm = () => {
                                         loading={submitAPIStatus?.loading}
                                         variant="gradient"
                                         gradient={{ from: colors.from_blue_600, to: colors.to_indigo_700 }}
-                                        className="h-12 font-medium text-lg"
+                                        className="h-12 text-lg font-medium"
                                         style={{
                                             boxShadow: `0 4px 15px ${colors.primary}40`,
                                         }}
@@ -500,7 +500,7 @@ const ComponentsAuthRegisterForm = () => {
                                     </Button>
                                 </motion.div>
 
-                                <motion.div variants={itemVariants} className="text-center text-sm mt-6">
+                                <motion.div variants={itemVariants} className="mt-6 text-sm text-center">
                                     <span className="text-gray-600 dark:text-gray-400">Already have an account? </span>
                                     <Link href="/auth/login" className="font-medium transition hover:underline" style={{ color: colors.primary }}>
                                         Sign in
@@ -530,7 +530,7 @@ const ComponentsAuthRegisterForm = () => {
                     timingFunction: 'ease',
                 }}
                 title={
-                    <Title order={3} className="text-center w-full">
+                    <Title order={3} className="w-full text-center">
                         <motion.span
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -564,7 +564,7 @@ const ComponentsAuthRegisterForm = () => {
                         </motion.div>
 
                         <motion.p className="text-sm text-center" style={{ color: colors.lightText }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-                            We've sent a 6-digit verification code to your email{' '}
+                            We have sent a 6-digit verification code to your email{' '}
                             <span className="font-semibold" style={{ color: colors.primary }}>
                                 {formField?.email}
                             </span>
@@ -657,7 +657,7 @@ const ComponentsAuthRegisterForm = () => {
                                     `Resend OTP in ${otpResendTime}s`
                                 ) : (
                                     <>
-                                        Didn't receive code?{' '}
+                                        Didn&apos;t receive code?{' '}
                                         <motion.button
                                             onClick={resendOtp}
                                             className="font-medium focus:outline-none"

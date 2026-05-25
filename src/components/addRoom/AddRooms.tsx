@@ -1,312 +1,411 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { Modal, TextInput, Textarea, Select, Button, Group, ActionIcon } from '@mantine/core';
-import { Plus, Edit3, X } from 'lucide-react';
-import { Message } from '@/app/helpers/AssetHelpers';
-import CustomTable from '../customComponents/CustomTable';
-import CustomTextInput from '../customComponents/CustomTextInput';
-import CustomSelectInput from '../customComponents/CustomSelectInput';
-import { addRooms, updateRooms } from '@/app/api/RoomsAPI';
-import { getRecords } from '../CommonFunction';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { fetchRoomDetailsById } from './AddRoomsFunction';
+
+import React, { useState } from 'react';
+import { Button, Modal, TextInput, Textarea, Group, Badge, Card, Divider } from '@mantine/core';
+import { Plus, Edit3, Trash2, Save, X, Check } from 'lucide-react';
+
+// Define types
+type PermissionAction = 'View' | 'Add' | 'Edit' | 'Delete';
+type ModuleName = 'Dashboard' | 'Companies' | 'Leads' | 'Contacts' | 'Reports' | 'Users' | 'Roles & Permission' | 'Setting';
+
+interface PermissionsPerAction {
+  View: boolean;
+  Add: boolean;
+  Edit: boolean;
+  Delete: boolean;
+}
+
+interface ModulePermissions {
+  Dashboard: PermissionsPerAction;
+  Companies: PermissionsPerAction;
+  Leads: PermissionsPerAction;
+  Contacts: PermissionsPerAction;
+  Reports: PermissionsPerAction;
+  Users: PermissionsPerAction;
+  'Roles & Permission': PermissionsPerAction;
+  Setting: PermissionsPerAction;
+}
+
+interface Role {
+  id: number;
+  name: string;
+  description: string;
+  permissions: Partial<ModulePermissions>;
+}
+
+interface PermissionsState {
+  [key: string]: ModulePermissions;
+}
 
 const AddRooms = () => {
-    const [formData, setFormData] = useState({
-        roomName: '',
-        roomNumber: '',
-        roomArea: '',
-        roomDescription: '',
-        roomStatus: 'active',
-    });
+  const [selectedRole, setSelectedRole] = useState<string>('Admin');
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [roleFormData, setRoleFormData] = useState({
+    name: '',
+    description: '',
+  });
 
-    const [rooms, setRooms] = useState<any>([]);
-    const [errors, setErrors] = useState<any>({});
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editIndex, setEditIndex] = useState<number | null>(null);
+  // Dummy roles data
+  const [roles, setRoles] = useState<Role[]>([
+    { id: 1, name: 'Admin', description: 'Administrator', permissions: {} },
+    { id: 2, name: 'Manager', description: 'Team Manager', permissions: {} },
+    { id: 3, name: 'Employee', description: 'Regular Employee', permissions: {} },
+    { id: 4, name: 'Sales Head', description: 'Sales Department', permissions: {} },
+  ]);
 
-    const [roomId, setRoomId] = useState();
+  // Module permissions structure
+  const modules: ModuleName[] = [
+    'Dashboard',
+    'Companies',
+    'Leads',
+    'Contacts',
+    'Reports',
+    'Users',
+    'Roles & Permission',
+    'Setting',
+  ];
 
-    const statuses = [
-        { label: 'Active', value: 'active' },
-        { label: 'Inactive', value: 'inactive' },
-    ];
+  const permissionActions: PermissionAction[] = ['View', 'Add', 'Edit', 'Delete'];
 
-    const handleInputChange = (e: any) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors((prev: any) => ({ ...prev, [name]: '' }));
+  // Dummy permissions data for each role
+  const [permissions, setPermissions] = useState<PermissionsState>({
+    Admin: {
+      Dashboard: { View: true, Add: true, Edit: true, Delete: true },
+      Companies: { View: true, Add: true, Edit: true, Delete: true },
+      Leads: { View: true, Add: true, Edit: true, Delete: true },
+      Contacts: { View: true, Add: true, Edit: true, Delete: false },
+      Reports: { View: true, Add: true, Edit: true, Delete: false },
+      Users: { View: true, Add: true, Edit: true, Delete: true },
+      'Roles & Permission': { View: true, Add: true, Edit: true, Delete: true },
+      Setting: { View: true, Add: true, Edit: true, Delete: true },
+    },
+    Manager: {
+      Dashboard: { View: true, Add: false, Edit: false, Delete: false },
+      Companies: { View: true, Add: true, Edit: true, Delete: false },
+      Leads: { View: true, Add: true, Edit: true, Delete: false },
+      Contacts: { View: true, Add: true, Edit: false, Delete: false },
+      Reports: { View: true, Add: false, Edit: false, Delete: false },
+      Users: { View: false, Add: false, Edit: false, Delete: false },
+      'Roles & Permission': { View: false, Add: false, Edit: false, Delete: false },
+      Setting: { View: false, Add: false, Edit: false, Delete: false },
+    },
+    Employee: {
+      Dashboard: { View: true, Add: false, Edit: false, Delete: false },
+      Companies: { View: true, Add: false, Edit: false, Delete: false },
+      Leads: { View: true, Add: true, Edit: false, Delete: false },
+      Contacts: { View: true, Add: true, Edit: false, Delete: false },
+      Reports: { View: false, Add: false, Edit: false, Delete: false },
+      Users: { View: false, Add: false, Edit: false, Delete: false },
+      'Roles & Permission': { View: false, Add: false, Edit: false, Delete: false },
+      Setting: { View: false, Add: false, Edit: false, Delete: false },
+    },
+    'Sales Head': {
+      Dashboard: { View: true, Add: false, Edit: false, Delete: false },
+      Companies: { View: true, Add: true, Edit: true, Delete: false },
+      Leads: { View: true, Add: true, Edit: true, Delete: true },
+      Contacts: { View: true, Add: true, Edit: true, Delete: false },
+      Reports: { View: true, Add: true, Edit: true, Delete: false },
+      Users: { View: false, Add: false, Edit: false, Delete: false },
+      'Roles & Permission': { View: false, Add: false, Edit: false, Delete: false },
+      Setting: { View: false, Add: false, Edit: false, Delete: false },
+    },
+  });
+
+  const handlePermissionChange = (module: ModuleName, action: PermissionAction, value: boolean) => {
+    setPermissions((prev) => ({
+      ...prev,
+      [selectedRole]: {
+        ...prev[selectedRole],
+        [module]: {
+          ...prev[selectedRole][module],
+          [action]: value,
+        },
+      },
+    }));
+  };
+
+  const handleAddRole = () => {
+    if (!roleFormData.name.trim()) return;
+    
+    const newRole: Role = {
+      id: roles.length + 1,
+      name: roleFormData.name,
+      description: roleFormData.description,
+      permissions: {},
     };
+    
+    setRoles([...roles, newRole]);
+    setPermissions((prev) => ({
+      ...prev,
+      [roleFormData.name]: {
+        Dashboard: { View: false, Add: false, Edit: false, Delete: false },
+        Companies: { View: false, Add: false, Edit: false, Delete: false },
+        Leads: { View: false, Add: false, Edit: false, Delete: false },
+        Contacts: { View: false, Add: false, Edit: false, Delete: false },
+        Reports: { View: false, Add: false, Edit: false, Delete: false },
+        Users: { View: false, Add: false, Edit: false, Delete: false },
+        'Roles & Permission': { View: false, Add: false, Edit: false, Delete: false },
+        Setting: { View: false, Add: false, Edit: false, Delete: false },
+      },
+    }));
+    
+    setSelectedRole(roleFormData.name);
+    setIsRoleModalOpen(false);
+    setRoleFormData({ name: '', description: '' });
+  };
 
-    const handleSelectChange = (value: string | null, name: string) => {
-        setFormData((prev) => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors((prev: any) => ({ ...prev, [name]: '' }));
-    };
+  const handleEditRole = (role: Role) => {
+    setEditingRole(role);
+    setRoleFormData({ name: role.name, description: role.description });
+    setIsRoleModalOpen(true);
+  };
 
-    const validateForm = () => {
-        const newErrors: any = {};
-        if (!formData.roomName.trim()) newErrors.roomName = 'Room name is required';
-        if (!formData.roomNumber.trim()) newErrors.roomNumber = 'Room number is required';
-        if (!formData.roomArea.trim()) newErrors.roomArea = 'Room area is required';
-        if (!formData.roomStatus) newErrors.roomStatus = 'Status is required';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = () => {
-        if (!validateForm()) return;
-
-        {
-            console.log('inputField', formData);
-        }
-
-        isEditing
-            ? updateRooms(roomId ?? '', formData).then((res) => {
-                  if (res?.statusCode === 200) {
-                      getRecords(`/rooms`, setRooms);
-                      Message(res?.message, 'success');
-
-                      setFormData({
-                          roomName: '',
-                          roomNumber: '',
-                          roomArea: '',
-                          roomDescription: '',
-                          roomStatus: 'active',
-                      });
-                      setIsEditing(false);
-                      setEditIndex(null);
-                      setIsModalOpen(false);
-                  } else {
-                      Message(res?.message, 'error');
-                  }
-              })
-            : addRooms(formData).then((res) => {
-                  if (res?.statusCode === 200) {
-                      getRecords(`/rooms`, setRooms);
-                      Message(res?.message, 'success');
-
-                      setFormData({
-                          roomName: '',
-                          roomNumber: '',
-                          roomArea: '',
-                          roomDescription: '',
-                          roomStatus: 'active',
-                      });
-                      setIsEditing(false);
-                      setEditIndex(null);
-                      setIsModalOpen(false);
-                  } else {
-                      Message(res?.message, 'error');
-                  }
-              });
-    };
-
-    {
-        console.log(errors, 'errors');
-    }
-
-    const handleEdit = (roomId: any) => {
-        fetchRoomDetailsById(roomId, setFormData);
-        setIsEditing(true);
-        setIsModalOpen(true);
-        setRoomId(roomId);
-    };
-
-    const tableColumns = [
-        {
-            th: {
-                id: 'srNo',
-                style: {
-                    minWidth: '70px',
-                    width: '60px',
-                },
-            },
-            text: 'SR NO.',
-        },
-        {
-            th: {
-                id: 'number',
-                style: {
-                    minWidth: '150px',
-                    width: '150px',
-                },
-            },
-            text: 'Room Number',
-        },
-        {
-            th: {
-                id: 'name',
-                style: {
-                    minWidth: '250px',
-                    width: '250px',
-                },
-            },
-            text: 'Room Name',
-        },
-        {
-            th: {
-                id: 'area',
-                style: {
-                    minWidth: '200px',
-                    width: '200px',
-                },
-            },
-            text: 'Area',
-        },
-        {
-            th: {
-                id: 'description',
-                style: {
-                    minWidth: '300px',
-                    width: '300px',
-                },
-            },
-            text: 'Description',
-        },
-        {
-            th: {
-                id: 'status',
-                style: {
-                    minWidth: '100px',
-                    width: '100px',
-                },
-            },
-            text: 'Status',
-        },
-        {
-            th: {
-                id: 'action',
-                style: {
-                    minWidth: '100px',
-                    width: '100px',
-                },
-            },
-            text: 'Action',
-            justifyContent: 'center',
-        },
-    ];
-
-    useEffect(() => {
-        let mounted = true;
-        if (mounted) {
-            getRecords(`/rooms`, setRooms);
-        }
-        return () => {
-            mounted = false;
-        };
-    }, []);
-
-    return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Room Management</h1>
-                    <Button
-                        leftSection={<Plus size={16} />}
-                        color="green"
-                        onClick={() => {
-                            setIsModalOpen(true);
-                            setIsEditing(false);
-                            setFormData({
-                                roomName: '',
-                                roomNumber: '',
-                                roomArea: '',
-                                roomDescription: '',
-                                roomStatus: 'active',
-                            });
-                        }}
-                    >
-                        Add Room
-                    </Button>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                    <CustomTable
-                        data={rooms}
-                        setData={setRooms}
-                        isSearchingRequired={false}
-                        isSortingRequired={false}
-                        isPaginationRequired={false}
-                        tableHeadData={tableColumns}
-                        tableBody={() => {
-                            return rooms?.data?.map((obj: any, index: number) => (
-                                <tr key={obj?.id} className="border-b">
-                                    <td className="py-6 px-5">{index + 1}</td>
-                                    <td>{obj?.room_number ?? '-'}</td>
-                                    <td>{obj?.room_name ?? '-'}</td>
-                                    <td>{obj?.room_area ?? '-'}</td>
-                                    <td>{obj?.room_description ?? '-'}</td>
-                                    <td>{obj?.room_status ?? '-'}</td>
-                                    <td className="py-4 px-5 text-center">
-                                        <button
-                                            className="text-blue-600 hover:text-blue-800 p-2 transition-colors"
-                                            onClick={(event) => {
-                                                handleEdit(obj?.id);
-                                            }}
-                                        >
-                                            <FontAwesomeIcon icon={faEdit} />
-                                        </button>
-                                    </td>{' '}
-                                </tr>
-                            ));
-                        }}
-                        url={`users`}
-                        notFoundMessage="No Users Found."
-                        notFoundImage="/assets/images/eximTrade/WorkInProgress.svg"
-                    />{' '}
-                </div>
-
-                <Modal
-                    opened={isModalOpen}
-                    onClose={() => {
-                        setIsModalOpen(false), setErrors({});
-                    }}
-                    title={isEditing ? 'Update Room' : 'Add New Room'}
-                    centered
-                    overlayProps={{ blur: 4, opacity: 0.4 }}
-                    size="lg"
-                >
-                    <div className="space-y-4">
-                        <CustomTextInput
-                            withAsterisk={false}
-                            label="Room Name"
-                            placeholder="Enter room name"
-                            name="roomName"
-                            value={formData.roomName}
-                            onChange={handleInputChange}
-                            error={errors.roomName}
-                        />
-                        <CustomTextInput label="Room Number" placeholder="Enter room number" name="roomNumber" value={formData.roomNumber} onChange={handleInputChange} error={errors.roomName} />
-                        <CustomTextInput label="Room Area (sq ft)" placeholder="Enter area" name="roomArea" value={formData.roomArea} onChange={handleInputChange} error={errors.roomArea} />
-                        <Textarea label="Room Description" placeholder="Enter description" name="roomDescription" value={formData.roomDescription} onChange={handleInputChange} />
-                        <CustomSelectInput
-                            label="Room Status"
-                            data={statuses}
-                            value={formData.roomStatus}
-                            onChange={(value) => handleSelectChange(value, 'roomStatus')}
-                            error={errors.roomStatus}
-                            name="roomStatus"
-                        />
-
-                        <Group justify="flex-end" mt="md">
-                            <Button variant="outline" color="gray" onClick={() => setIsModalOpen(false)}>
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    handleSubmit();
-                                }}
-                            >
-                                {isEditing ? 'Update Room' : 'Save Room'}
-                            </Button>
-                        </Group>
-                    </div>
-                </Modal>
-            </div>
-        </div>
+  const handleUpdateRole = () => {
+    if (!roleFormData.name.trim()) return;
+    
+    const updatedRoles = roles.map((role) =>
+      role.id === editingRole?.id
+        ? { ...role, name: roleFormData.name, description: roleFormData.description }
+        : role
     );
+    
+    setRoles(updatedRoles);
+    
+    // Update permissions key if name changed
+    if (editingRole && editingRole.name !== roleFormData.name) {
+      const permissionsCopy = { ...permissions };
+      permissionsCopy[roleFormData.name] = permissionsCopy[editingRole.name];
+      delete permissionsCopy[editingRole.name];
+      setPermissions(permissionsCopy);
+      setSelectedRole(roleFormData.name);
+    }
+    
+    setIsRoleModalOpen(false);
+    setEditingRole(null);
+    setRoleFormData({ name: '', description: '' });
+  };
+
+  const handleDeleteRole = (roleId: number, roleName: string) => {
+    if (roleName === 'Admin') {
+      alert('Cannot delete Admin role');
+      return;
+    }
+    
+    if (confirm(`Are you sure you want to delete the role "${roleName}"?`)) {
+      setRoles(roles.filter((role) => role.id !== roleId));
+      const newPermissions = { ...permissions };
+      delete newPermissions[roleName];
+      setPermissions(newPermissions);
+      
+      if (selectedRole === roleName && roles.length > 1) {
+        const remainingRole = roles.find((r) => r.id !== roleId);
+        if (remainingRole) {
+          setSelectedRole(remainingRole.name);
+        }
+      }
+    }
+  };
+
+  const handleSavePermissions = () => {
+    console.log('Saving permissions:', permissions);
+    alert('Permissions saved successfully!');
+  };
+
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="mx-auto max-w-7xl">
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+            Roles & Permission
+          </h1>
+          <p className="text-lg text-gray-600">
+            Manage User roles and set module-wise permission
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+          {/* Roles Sidebar */}
+          <div className="lg:col-span-1">
+            <Card shadow="sm" padding="lg" radius="md" className="bg-white border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">Roles</h2>
+                <Button
+                  size="sm"
+                  variant="light"
+                  color="green"
+                  leftSection={<Plus size={16} />}
+                  onClick={() => {
+                    setEditingRole(null);
+                    setRoleFormData({ name: '', description: '' });
+                    setIsRoleModalOpen(true);
+                  }}
+                >
+                  Add Roles
+                </Button>
+              </div>
+
+              <Divider mb="md" />
+
+              <div className="space-y-2">
+                {roles.map((role) => (
+                  <div
+                    key={role.id}
+                    className={`p-3 rounded-lg cursor-pointer transition-all ${
+                      selectedRole === role.name
+                        ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-500 shadow-sm'
+                        : 'hover:bg-gray-50 border-l-4 border-transparent'
+                    }`}
+                    onClick={() => setSelectedRole(role.name)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-800">{role.name}</h3>
+                        <p className="mt-1 text-xs text-gray-500">{role.description}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditRole(role);
+                          }}
+                          className="p-1 text-blue-600 transition-colors rounded hover:bg-blue-50"
+                        >
+                          <Edit3 size={14} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteRole(role.id, role.name);
+                          }}
+                          className="p-1 text-red-600 transition-colors rounded hover:bg-red-50"
+                          disabled={role.name === 'Admin'}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          {/* Permissions Table */}
+          <div className="lg:col-span-3">
+            <Card shadow="sm" padding="lg" radius="md" className="bg-white border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Permission for :{' '}
+                    <span className="text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+                      {selectedRole}
+                    </span>
+                  </h2>
+                </div>
+                <Button
+                  color="green"
+                  leftSection={<Save size={16} />}
+                  onClick={handleSavePermissions}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                >
+                  Save Permission
+                </Button>
+              </div>
+
+              <Divider mb="md" />
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="px-4 py-3 text-sm font-semibold text-left text-gray-700">Module</th>
+                      {permissionActions.map((action) => (
+                        <th key={action} className="px-4 py-3 text-sm font-semibold text-center text-gray-700">
+                          {action}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {modules.map((module) => (
+                      <tr key={module} className="transition-colors border-b border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-800">{module}</td>
+                        {permissionActions.map((action) => (
+                          <td key={action} className="px-4 py-3 text-center">
+                            <button
+                              onClick={() =>
+                                handlePermissionChange(
+                                  module,
+                                  action,
+                                  !permissions[selectedRole]?.[module]?.[action]
+                                )
+                              }
+                              className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
+                                permissions[selectedRole]?.[module]?.[action]
+                                  ? 'bg-green-500 text-white hover:bg-green-600'
+                                  : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
+                              }`}
+                            >
+                              {permissions[selectedRole]?.[module]?.[action] && <Check size={14} />}
+                            </button>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Add/Edit Role Modal */}
+      <Modal
+        opened={isRoleModalOpen}
+        onClose={() => {
+          setIsRoleModalOpen(false);
+          setEditingRole(null);
+          setRoleFormData({ name: '', description: '' });
+        }}
+        title={editingRole ? 'Edit Role' : 'Add New Role'}
+        centered
+        size="md"
+        overlayProps={{ blur: 4, opacity: 0.4 }}
+      >
+        <div className="space-y-4">
+          <TextInput
+            label="Role Name"
+            placeholder="Enter role name (e.g., Super Admin)"
+            value={roleFormData.name}
+            onChange={(e) => setRoleFormData({ ...roleFormData, name: e.target.value })}
+            required
+          />
+          <Textarea
+            label="Description"
+            placeholder="Enter role description"
+            value={roleFormData.description}
+            onChange={(e) => setRoleFormData({ ...roleFormData, description: e.target.value })}
+            rows={3}
+          />
+          <Group justify="flex-end" mt="md">
+            <Button variant="outline" color="gray" onClick={() => setIsRoleModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              color="green"
+              onClick={editingRole ? handleUpdateRole : handleAddRole}
+              className="bg-gradient-to-r from-green-500 to-green-600"
+            >
+              {editingRole ? 'Update Role' : 'Add Role'}
+            </Button>
+          </Group>
+        </div>
+      </Modal>
+    </div>
+  );
 };
 
 export default AddRooms;

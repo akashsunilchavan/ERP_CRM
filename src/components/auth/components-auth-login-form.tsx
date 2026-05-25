@@ -79,7 +79,7 @@ const ComponentsAuthLoginForm = () => {
                     setCurrentUser(userData);
                     saveAuth(token);
 
-                    router.push('/dashboard');
+                    router.push('/farmerDashboard');
 
                     const role = JSON.parse(localStorage?.getItem('currentUserRole') || '{}');
                     if (role?.features) {
@@ -94,18 +94,18 @@ const ComponentsAuthLoginForm = () => {
 
     return (
         // <div
-        //     className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-start p-6"
+        //     className="flex items-center justify-start min-h-screen p-6 bg-center bg-no-repeat bg-cover"
         //     style={{
         //         backgroundImage: "url('public/assets/images/fresh-space.jpg')", // put image in public/images
         //     }}
         // >
         //     <div className="w-full max-w-md">
         //         {/* Login Card */}
-        //         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        //         <div className="p-8 space-y-6 bg-white shadow-xl rounded-2xl">
         //             {/* Header */}
-        //             <div className="text-center space-y-2">
+        //             <div className="space-y-2 text-center">
         //                 <div className="flex justify-center mb-4">
-        //                     <div className="bg-green-100 p-3 rounded-full">
+        //                     <div className="p-3 bg-green-100 rounded-full">
         //                         <Sprout className="w-10 h-10 text-green-600" />
         //                     </div>
         //                 </div>
@@ -121,7 +121,7 @@ const ComponentsAuthLoginForm = () => {
         //                         placeholder="Enter Phone Number"
         //                         value={phoneNumber}
         //                         onChange={(event: any) => setPhoneNumber(event.target.value)}
-        //                         leftSection={<Phone className="h-5 w-5 text-gray-400" />}
+        //                         leftSection={<Phone className="w-5 h-5 text-gray-400" />}
         //                         error={errors.phoneNumber}
         //                         autoComplete="off"
         //                     />
@@ -130,7 +130,7 @@ const ComponentsAuthLoginForm = () => {
         //                 <div className="space-y-2">
         //                     <CustomTextInput
         //                         label="Password"
-        //                         leftSection={<Lock className="h-5 w-5 text-gray-400" />}
+        //                         leftSection={<Lock className="w-5 h-5 text-gray-400" />}
         //                         name="password"
         //                         placeholder="Enter Password"
         //                         value={password}
@@ -138,8 +138,8 @@ const ComponentsAuthLoginForm = () => {
         //                         error={errors.password}
         //                         autoComplete="off"
         //                         rightSection={
-        //                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center">
-        //                                 {showPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
+        //                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3">
+        //                                 {showPassword ? <EyeOff className="w-5 h-5 text-gray-400 hover:text-gray-600" /> : <Eye className="w-5 h-5 text-gray-400 hover:text-gray-600" />}
         //                             </button>
         //                         }
         //                     />
@@ -150,7 +150,7 @@ const ComponentsAuthLoginForm = () => {
         //                         <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
         //                         <span className="ml-2 text-sm text-gray-600">Remember me</span>
         //                     </label>
-        //                     <a href="#" className="text-sm text-green-600 hover:text-green-700 font-medium">
+        //                     <a href="#" className="text-sm font-medium text-green-600 hover:text-green-700">
         //                         Forgot password?
         //                     </a>
         //                 </div>
@@ -159,11 +159,11 @@ const ComponentsAuthLoginForm = () => {
         //                 <button
         //                     type="submit"
         //                     disabled={isLoading}
-        //                     className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        //                     className="flex items-center justify-center w-full px-4 py-3 font-semibold text-white transition-colors duration-200 bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
         //                 >
         //                     {isLoading ? (
         //                         <>
-        //                             <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        //                             <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         //                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
         //                                 <path
         //                                     className="opacity-75"
@@ -180,10 +180,10 @@ const ComponentsAuthLoginForm = () => {
         //             </form>
 
         //             {/* Sign Up Link */}
-        //             <div className="text-center pt-4 border-t border-gray-200">
+        //             <div className="pt-4 text-center border-t border-gray-200">
         //                 <p className="text-sm text-gray-600">
         //                     Don't have an account?{' '}
-        //                     <a href="#" className="text-green-600 hover:text-green-700 font-semibold">
+        //                     <a href="#" className="font-semibold text-green-600 hover:text-green-700">
         //                         Sign up now
         //                     </a>
         //                 </p>
@@ -191,11 +191,11 @@ const ComponentsAuthLoginForm = () => {
         //         </div>
 
         //         {/* Footer Text */}
-        //         <p className="text-center text-sm text-gray-600 mt-6">© 2025 Agricultural Platform. All rights reserved.</p>
+        //         <p className="mt-6 text-sm text-center text-gray-600">© 2025 Agricultural Platform. All rights reserved.</p>
         //     </div>
         // </div>
         <div
-            className="relative min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center lg:justify-start px-4 sm:px-6 lg:px-12"
+            className="relative flex items-center justify-center min-h-screen px-4 bg-center bg-no-repeat bg-cover lg:justify-start sm:px-6 lg:px-12"
             style={{
                 backgroundImage: "url('/assets/images/fresh-space.jpg')",
             }}
@@ -205,20 +205,18 @@ const ComponentsAuthLoginForm = () => {
 
             {/* Login Container */}
             <div
-                className="relative w-full max-w-sm sm:max-w-md lg:max-w-md
-                  mx-auto lg:mx-0
-                  lg:ml-12"
+                className="relative w-full max-w-sm mx-auto sm:max-w-md lg:max-w-md lg:mx-0 lg:ml-12"
             >
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6 sm:p-8 space-y-6">
+                <div className="p-6 space-y-6 shadow-xl bg-white/95 backdrop-blur-md rounded-2xl sm:p-8">
                     {/* Header */}
-                    <div className="text-center space-y-2">
+                    <div className="space-y-2 text-center">
                         <div className="flex justify-center mb-4">
-                            <div className="bg-green-100 p-3 rounded-full">
-                                <Sprout className="w-9 h-9 sm:w-10 sm:h-10 text-green-600" />
+                            <div className="p-3 bg-green-100 rounded-full">
+                                <Sprout className="text-green-600 w-9 h-9 sm:w-10 sm:h-10" />
                             </div>
                         </div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome Back</h1>
-                        <p className="text-sm sm:text-base text-gray-600">Sign in to your agricultural platform</p>
+                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Welcome Back</h1>
+                        <p className="text-sm text-gray-600 sm:text-base">Sign in to your agricultural platform</p>
                     </div>
 
                     {/* Form */}
@@ -229,7 +227,7 @@ const ComponentsAuthLoginForm = () => {
                             placeholder="Enter Phone Number"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
-                            leftSection={<Phone className="h-5 w-5 text-gray-400" />}
+                            leftSection={<Phone className="w-5 h-5 text-gray-400" />}
                             error={errors.phoneNumber}
                         />
 
@@ -239,37 +237,37 @@ const ComponentsAuthLoginForm = () => {
                             placeholder="Enter Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            leftSection={<Lock className="h-5 w-5 text-gray-400" />}
+                            leftSection={<Lock className="w-5 h-5 text-gray-400" />}
                             error={errors.password}
                             rightSection={
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                    {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
                                 </button>
                             }
                         />
 
                         {/* Remember / Forgot */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <label className="flex items-center">
                                 <input type="checkbox" className="w-4 h-4 text-green-600 rounded" />
                                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm text-green-600 font-medium text-right">
+                            <a href="#" className="text-sm font-medium text-right text-green-600">
                                 Forgot password?
                             </a>
                         </div>
 
                         {/* Submit */}
-                        <button type="submit" disabled={isLoading} className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+                        <button type="submit" disabled={isLoading} className="w-full py-3 font-semibold text-white transition bg-green-600 rounded-lg hover:bg-green-700">
                             {isLoading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
 
                     {/* Signup */}
-                    <div className="text-center pt-4 border-t">
+                    <div className="pt-4 text-center border-t">
                         <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
-                            <a href="#" className="text-green-600 font-semibold">
+                            Don&apos;t have an account?{' '}
+                            <a href="#" className="font-semibold text-green-600">
                                 Sign up now
                             </a>
                         </p>
@@ -277,7 +275,7 @@ const ComponentsAuthLoginForm = () => {
                 </div>
 
                 {/* Footer */}
-                <p className="mt-4 text-center lg:text-left text-xs sm:text-sm text-white">© {new Date().getFullYear()} JDRS Agro All rights reserved.</p>
+                <p className="mt-4 text-xs text-center text-white lg:text-left sm:text-sm">© {new Date().getFullYear()} JDRS Agro All rights reserved.</p>
             </div>
         </div>
     );

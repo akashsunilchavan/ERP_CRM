@@ -10,8 +10,8 @@ import 'react-phone-input-2/lib/style.css';
 
 export const metadata: Metadata = {
     title: {
-        template: 'JDRS AGRO',
-        default: 'JDRS AGRO',
+        template: 'Samarth Enterprises',
+        default: 'Samarth Enterprises',
     },
 };
 const nunito = Nunito({
