@@ -1,20 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useState } from 'react';
-import { Sprout, Mail, Lock, Eye, EyeOff, PhoneCall, Phone } from 'lucide-react';
-import CustomNumberInput from '../customComponents/CustomNumberInput';
+import Image from 'next/image';
+import { Lock, Eye, EyeOff, Phone, ArrowRight } from 'lucide-react';
 import CustomTextInput from '../customComponents/CustomTextInput';
-import { generateOTP } from '@/app/api/Requests';
-import { Message } from '@/app/helpers/AssetHelpers';
-import { transformPermissions } from './LoginFunction';
 import { useAuth } from './Auth';
 import roleContext from '../context/roleContext';
 
 const ComponentsAuthLoginForm = () => {
     const router = useRouter();
-
     const { saveAuth, setCurrentUser } = useAuth();
-
     const { updateState } = useContext(roleContext);
 
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -23,9 +18,13 @@ const ComponentsAuthLoginForm = () => {
     const [errors, setErrors] = useState({ phoneNumber: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
 
+    const DUMMY_CREDENTIALS = {
+        phoneNumber: '1234567890',
+        password: 'password123'
+    };
+
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-
         setErrors({ phoneNumber: '', password: '' });
 
         let isValid = true;
@@ -49,233 +48,154 @@ const ComponentsAuthLoginForm = () => {
         if (isValid) {
             setIsLoading(true);
 
-            generateOTP(phoneNumber, password).then((res) => {
-                if (res?.statusCode === 200) {
-                    localStorage?.setItem('isLoggedIn', 'true');
-
-                    const features = transformPermissions(res?.data?.role);
+            setTimeout(() => {
+                if (phoneNumber === DUMMY_CREDENTIALS.phoneNumber && password === DUMMY_CREDENTIALS.password) {
+                    const features = [
+                        { dashboard: ['view', 'edit'] },
+                        { crops: ['view', 'create', 'edit', 'delete'] },
+                        { reports: ['view', 'download'] }
+                    ];
 
                     const userData = {
-                        role: res?.data?.role?.name,
-                        token: res?.data?.token,
+                        role: 'farmer',
+                        token: 'dummy-token-12345',
                         user: {
-                            user_id: res?.data?.user_id,
-                            first_name: res?.data?.first_name,
-                            last_name: res?.data?.last_name,
-                            email: res?.data?.email,
+                            user_id: '1',
+                            first_name: 'John',
+                            last_name: 'Doe',
+                            email: 'john.doe@example.com',
                         },
                     };
 
                     const token = {
-                        accessToken: res?.data?.token,
+                        accessToken: 'dummy-token-12345',
                     };
 
+                    localStorage?.setItem('isLoggedIn', 'true');
                     localStorage?.setItem(
                         'currentUserRole',
                         JSON.stringify({
                             features: features,
                         }),
                     );
+                    
                     setCurrentUser(userData);
                     saveAuth(token);
 
-                    router.push('/superadminDashboard');
+                  
 
-                    const role = JSON.parse(localStorage?.getItem('currentUserRole') || '{}');
-                    if (role?.features) {
-                        updateState(role?.features);
-                    }
+                    router.push('/superadminDashboard');
                 } else {
-                    Message(res?.message, 'error');
+                    const errorMessage = 
+                        phoneNumber !== DUMMY_CREDENTIALS.phoneNumber 
+                            ? 'Invalid phone number' 
+                            : 'Invalid password';
+                    
+                    alert(errorMessage);
                 }
-            });
+                
+                setIsLoading(false);
+            }, 1000);
         }
     };
 
     return (
-        // <div
-        //     className="flex items-center justify-start min-h-screen p-6 bg-center bg-no-repeat bg-cover"
-        //     style={{
-        //         backgroundImage: "url('public/assets/images/fresh-space.jpg')", // put image in public/images
-        //     }}
-        // >
-        //     <div className="w-full max-w-md">
-        //         {/* Login Card */}
-        //         <div className="p-8 space-y-6 bg-white shadow-xl rounded-2xl">
-        //             {/* Header */}
-        //             <div className="space-y-2 text-center">
-        //                 <div className="flex justify-center mb-4">
-        //                     <div className="p-3 bg-green-100 rounded-full">
-        //                         <Sprout className="w-10 h-10 text-green-600" />
-        //                     </div>
-        //                 </div>
-        //                 <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-        //                 <p className="text-gray-600">Sign in to your agricultural platform</p>
-        //             </div>
-
-        //             <form onSubmit={handleSubmit} className="space-y-5">
-        //                 <div className="space-y-2">
-        //                     <CustomTextInput
-        //                         name="phoneNumber"
-        //                         label="Phone Number"
-        //                         placeholder="Enter Phone Number"
-        //                         value={phoneNumber}
-        //                         onChange={(event: any) => setPhoneNumber(event.target.value)}
-        //                         leftSection={<Phone className="w-5 h-5 text-gray-400" />}
-        //                         error={errors.phoneNumber}
-        //                         autoComplete="off"
-        //                     />
-        //                 </div>
-
-        //                 <div className="space-y-2">
-        //                     <CustomTextInput
-        //                         label="Password"
-        //                         leftSection={<Lock className="w-5 h-5 text-gray-400" />}
-        //                         name="password"
-        //                         placeholder="Enter Password"
-        //                         value={password}
-        //                         onChange={(event: any) => setPassword(event.target.value)}
-        //                         error={errors.password}
-        //                         autoComplete="off"
-        //                         rightSection={
-        //                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3">
-        //                                 {showPassword ? <EyeOff className="w-5 h-5 text-gray-400 hover:text-gray-600" /> : <Eye className="w-5 h-5 text-gray-400 hover:text-gray-600" />}
-        //                             </button>
-        //                         }
-        //                     />
-        //                 </div>
-
-        //                 <div className="flex items-center justify-between">
-        //                     <label className="flex items-center">
-        //                         <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
-        //                         <span className="ml-2 text-sm text-gray-600">Remember me</span>
-        //                     </label>
-        //                     <a href="#" className="text-sm font-medium text-green-600 hover:text-green-700">
-        //                         Forgot password?
-        //                     </a>
-        //                 </div>
-
-        //                 {/* Submit Button */}
-        //                 <button
-        //                     type="submit"
-        //                     disabled={isLoading}
-        //                     className="flex items-center justify-center w-full px-4 py-3 font-semibold text-white transition-colors duration-200 bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        //                 >
-        //                     {isLoading ? (
-        //                         <>
-        //                             <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        //                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-        //                                 <path
-        //                                     className="opacity-75"
-        //                                     fill="currentColor"
-        //                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        //                                 ></path>
-        //                             </svg>
-        //                             Signing in...
-        //                         </>
-        //                     ) : (
-        //                         'Sign In'
-        //                     )}
-        //                 </button>
-        //             </form>
-
-        //             {/* Sign Up Link */}
-        //             <div className="pt-4 text-center border-t border-gray-200">
-        //                 <p className="text-sm text-gray-600">
-        //                     Don't have an account?{' '}
-        //                     <a href="#" className="font-semibold text-green-600 hover:text-green-700">
-        //                         Sign up now
-        //                     </a>
-        //                 </p>
-        //             </div>
-        //         </div>
-
-        //         {/* Footer Text */}
-        //         <p className="mt-6 text-sm text-center text-gray-600">© 2025 Agricultural Platform. All rights reserved.</p>
-        //     </div>
-        // </div>
-        <div
-            className="relative flex items-center justify-center min-h-screen px-4 bg-center bg-no-repeat bg-cover lg:justify-start sm:px-6 lg:px-12"
-            style={{
-                backgroundImage: "url('/assets/images/fresh-space.jpg')",
-            }}
-        >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/40"></div>
-
-            {/* Login Container */}
-            <div
-                className="relative w-full max-w-sm mx-auto sm:max-w-md lg:max-w-md lg:mx-0 lg:ml-12"
-            >
-                <div className="p-6 space-y-6 shadow-xl bg-white/95 backdrop-blur-md rounded-2xl sm:p-8">
-                    {/* Header */}
-                    <div className="space-y-2 text-center">
+        <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+            <div className="absolute inset-0 bg-[url('/assets/images/grain-pattern.png')] opacity-5"></div>
+            
+            <div className="relative w-full max-w-md px-4 sm:px-6">
+                <div className="p-6 border border-gray-100 shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl sm:p-8">
+                    <div className="mb-8 text-center">
                         <div className="flex justify-center mb-4">
-                            <div className="p-3 bg-green-100 rounded-full">
-                                <Sprout className="text-green-600 w-9 h-9 sm:w-10 sm:h-10" />
+                            <div className="p-3">
+                                <Image 
+                                    src="/assets/images/logo.png" 
+                                    alt="Samarth Enterprises" 
+                                    width={96}
+                                    height={96}
+                                    className="object-contain"
+                                    onError={(e) => {
+                                        const imgElement = e.target as HTMLImageElement;
+                                        imgElement.src = 'https://via.placeholder.com/96x96?text=SE';
+                                    }}
+                                />
                             </div>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Welcome Back</h1>
-                        <p className="text-sm text-gray-600 sm:text-base">Sign in to your agricultural platform</p>
                     </div>
 
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-                        <CustomTextInput
-                            name="phoneNumber"
-                            label="Phone Number"
-                            placeholder="Enter Phone Number"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            leftSection={<Phone className="w-5 h-5 text-gray-400" />}
-                            error={errors.phoneNumber}
-                        />
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <CustomTextInput
+                                name="phoneNumber"
+                                label="Phone Number"
+                                placeholder="Enter your registered phone number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                leftSection={<Phone className="w-5 h-5 text-gray-400" />}
+                                error={errors.phoneNumber}
+                            />
+                        </div>
 
-                        <CustomTextInput
-                            name="password"
-                            label="Password"
-                            placeholder="Enter Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            leftSection={<Lock className="w-5 h-5 text-gray-400" />}
-                            error={errors.password}
-                            rightSection={
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
-                                </button>
-                            }
-                        />
+                        <div>
+                            <CustomTextInput
+                                name="password"
+                                label="Password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                leftSection={<Lock className="w-5 h-5 text-gray-400" />}
+                                error={errors.password}
+                                rightSection={
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowPassword(!showPassword)} 
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3 transition hover:opacity-70"
+                                    >
+                                        {showPassword ? 
+                                            <EyeOff className="w-5 h-5 text-gray-400" /> : 
+                                            <Eye className="w-5 h-5 text-gray-400" />
+                                        }
+                                    </button>
+                                }
+                            />
+                        </div>
 
-                        {/* Remember / Forgot */}
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <label className="flex items-center">
-                                <input type="checkbox" className="w-4 h-4 text-green-600 rounded" />
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center cursor-pointer">
+                                <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
                                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm font-medium text-right text-green-600">
+                            <a href="#" className="text-sm font-medium text-green-600 transition hover:text-green-700">
                                 Forgot password?
                             </a>
                         </div>
 
-                        {/* Submit */}
-                        <button type="submit" disabled={isLoading} className="w-full py-3 font-semibold text-white transition bg-green-600 rounded-lg hover:bg-green-700">
-                            {isLoading ? 'Signing in...' : 'Sign In'}
+                        <button 
+                            type="submit" 
+                            disabled={isLoading} 
+                            className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Signing in...
+                                </>
+                            ) : (
+                                <>
+                                    Sign In
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
                         </button>
                     </form>
-
-                    {/* Signup */}
-                    <div className="pt-4 text-center border-t">
-                        <p className="text-sm text-gray-600">
-                            Don&apos;t have an account?{' '}
-                            <a href="#" className="font-semibold text-green-600">
-                                Sign up now
-                            </a>
-                        </p>
-                    </div>
                 </div>
 
-                {/* Footer */}
-                <p className="mt-4 text-xs text-center text-white lg:text-left sm:text-sm">© {new Date().getFullYear()} JDRS Agro All rights reserved.</p>
+                <p className="mt-6 text-xs text-center text-gray-500">
+                    © {new Date().getFullYear()} Samarth Enterprises. All rights reserved.
+                </p>
             </div>
         </div>
     );

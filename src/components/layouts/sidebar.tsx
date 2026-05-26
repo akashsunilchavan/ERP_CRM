@@ -91,7 +91,7 @@ const Sidebar = () => {
             label: t('Dashboard'),
         },
         {
-            path: '/adminDashboard',
+            path: '/companyManagment',
             icon: faBuilding,
             label: t('Company Management'),
         },
@@ -100,10 +100,10 @@ const Sidebar = () => {
             icon: faFolderOpen,
             label: t('Global M'),
             children: [
-                { path: '/harvesting', label: t('Departments') },
-                { path: '/addRooms', label: t('Roles & Permissions') },
-                { path: '/addSupervisors', label: t('Lead Status') },
-                { path: '/addLabours', label: t('Payment Modes') },
+                { path: '/department', label: t('Departments') },
+                { path: '/rolesAndPermission', label: t('Roles & Permissions') },
+                { path: '/leadStatus', label: t('Lead Status') },
+                { path: '/paymentMode', label: t('Payment Modes') },
             ],
         },
         {
