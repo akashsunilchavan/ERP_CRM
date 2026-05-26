@@ -79,7 +79,7 @@ const ComponentsAuthLoginForm = () => {
                     setCurrentUser(userData);
                     saveAuth(token);
 
-                    router.push('/farmerDashboard');
+                    router.push('/superadminDashboard');
 
                     const role = JSON.parse(localStorage?.getItem('currentUserRole') || '{}');
                     if (role?.features) {

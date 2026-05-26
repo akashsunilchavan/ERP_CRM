@@ -86,7 +86,7 @@ const Sidebar = () => {
 
     const allMenuItems: MenuItem[] = [
         {
-            path: '/farmerDashboard',
+            path: '/superadminDashboard',
             icon: faDashboard,
             label: t('Dashboard'),
         },
@@ -137,13 +137,13 @@ const Sidebar = () => {
                             icon: faCalculator,
                             label: t('Account'),
                             children: [
-                                { path: '/admin/account/dashboard', label: t('Dashboard') },
-                                { path: '/admin/account/customer-payments', label: t('Customer Payments') },
-                                { path: '/admin/account/vendor-payments', label: t('Vendor Payments') },
-                                { path: '/admin/account/invoices', label: t('Invoices') },
-                                { path: '/admin/account/costing', label: t('Costing') },
-                                { path: '/admin/account/ledger', label: t('Ledger') },
-                                { path: '/admin/account/reports', label: t('Reports') },
+                                { path: '/accountsDashboard', label: t('Dashboard') },
+                                { path: '/accountCustomer', label: t('Customer Payments') },
+                                { path: '/accountVendorPayment', label: t('Vendor Payments') },
+                                { path: '/accountsInvoice', label: t('Invoices') },
+                                { path: '/accountCosting', label: t('Costing') },
+                                { path: '/accountLedger', label: t('Ledger') },
+                                { path: '/accountReport', label: t('Reports') },
                             ],
                         },
                         {
@@ -151,10 +151,12 @@ const Sidebar = () => {
                             icon: faBullhorn,
                             label: t('PPC'),
                             children: [
-                                { path: '/admin/ppc/dashboard', label: t('Dashboard') },
-                                { path: '/admin/ppc/campaigns', label: t('Campaigns') },
-                                { path: '/admin/ppc/leads', label: t('Leads') },
-                                { path: '/admin/ppc/reports', label: t('Reports') },
+                                { path: '/ppcDashboard', label: t('Dashboard') },
+                                { path: '/ppcBom', label: t('BOM') },
+                                { path: '/ppcProductionPlanning', label: t('Production Planning') },
+                                { path: '/ppcScheduling', label: t('Scheduling') },
+                                { path: '/ppcMaterialPlaning', label: t('Material Planning') },
+                                { path: '/PpcReports', label: t('Reports') },
                             ],
                         },
                     ],
@@ -183,9 +185,7 @@ const Sidebar = () => {
             if (!item?.permissionKey) return true;
             const hasPermission = checkRole([item?.permissionKey], roleState?.features);
             if (item.children) {
-                const filteredChildren = item.children.filter(
-                    (child) => !child.permissionKey || checkRole([child.permissionKey], roleState.features)
-                );
+                const filteredChildren = item.children.filter((child) => !child.permissionKey || checkRole([child.permissionKey], roleState.features));
                 if (filteredChildren.length > 0) {
                     item.children = filteredChildren;
                     return true;
@@ -203,10 +203,7 @@ const Sidebar = () => {
         <FontAwesomeIcon
             icon={icon}
             className={`${size === 'md' ? 'h-5 w-5 mr-3' : 'h-4 w-4 mr-2.5'} transition-all duration-200 
-                ${isActive
-                    ? 'text-primary-600 dark:text-primary-400 scale-110'
-                    : 'text-gray-600 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400'
-                }`}
+                ${isActive ? 'text-primary-600 dark:text-primary-400 scale-110' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400'}`}
         />
     );
 
@@ -214,10 +211,7 @@ const Sidebar = () => {
         <FontAwesomeIcon
             icon={isOpen ? faChevronUp : faChevronDown}
             className={`text-xs transition-all duration-200 
-                ${isActive
-                    ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400'
-                }`}
+                ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400'}`}
         />
     );
 
@@ -230,15 +224,17 @@ const Sidebar = () => {
                         <Link
                             href={leaf.path}
                             className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200
-                                ${isActive
-                                    ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
+                                ${
+                                    isActive
+                                        ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
                                 } group`}
                             onClick={() => handleMenuClick(leaf.path)}
                             onMouseEnter={() => setHoveredItem(leaf.path)}
                             onMouseLeave={() => setHoveredItem(null)}
                         >
-                            <span className={`w-1.5 h-1.5 rounded-full mr-2 flex-shrink-0
+                            <span
+                                className={`w-1.5 h-1.5 rounded-full mr-2 flex-shrink-0
                                 ${isActive ? 'bg-blue-600' : 'bg-gray-400 group-hover:bg-white'}`}
                             />
                             <span>{leaf.label}</span>
@@ -263,10 +259,7 @@ const Sidebar = () => {
                                 onMouseEnter={() => setHoveredItem(leaf.path)}
                                 onMouseLeave={() => setHoveredItem(null)}
                                 className={`w-full flex items-center justify-between px-4 py-2 text-sm rounded-lg transition-all duration-200
-                                    ${isLeafActive
-                                        ? 'bg-blue-100 text-black font-medium shadow-sm'
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800'
-                                    } group`}
+                                    ${isLeafActive ? 'bg-blue-100 text-black font-medium shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800'} group`}
                             >
                                 <div className="flex items-center">
                                     {leaf.icon && (
@@ -296,9 +289,10 @@ const Sidebar = () => {
                         <Link
                             href={leaf.path}
                             className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200
-                                ${isLeafActive
-                                    ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
+                                ${
+                                    isLeafActive
+                                        ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
                                 } group`}
                             onClick={() => handleMenuClick(leaf.path)}
                             onMouseEnter={() => setHoveredItem(leaf.path)}
@@ -333,10 +327,7 @@ const Sidebar = () => {
                                 onMouseEnter={() => setHoveredItem(child.path)}
                                 onMouseLeave={() => setHoveredItem(null)}
                                 className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-lg transition-all duration-200
-                                    ${isChildActive
-                                        ? 'bg-blue-100 text-black font-medium shadow-sm'
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800'
-                                    } group`}
+                                    ${isChildActive ? 'bg-blue-100 text-black font-medium shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-gray-800'} group`}
                             >
                                 <div className="flex items-center">
                                     {child.icon && (
@@ -366,9 +357,10 @@ const Sidebar = () => {
                         <Link
                             href={child.path}
                             className={`flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200
-                                ${selectedSidebarSection === child.path || hoveredItem === child.path
-                                    ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
+                                ${
+                                    selectedSidebarSection === child.path || hoveredItem === child.path
+                                        ? 'bg-blue-100 text-black font-medium shadow-sm scale-[1.02]'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500'
                                 } group`}
                             onClick={() => handleMenuClick(child.path)}
                             onMouseEnter={() => setHoveredItem(child.path)}
@@ -378,10 +370,7 @@ const Sidebar = () => {
                                 <FontAwesomeIcon
                                     icon={child.icon}
                                     className={`h-4 w-4 mr-2.5 transition-transform duration-200
-                                        ${selectedSidebarSection === child.path || hoveredItem === child.path
-                                            ? 'scale-110 text-black'
-                                            : 'text-gray-500 dark:text-gray-400 group-hover:text-white'
-                                        }`}
+                                        ${selectedSidebarSection === child.path || hoveredItem === child.path ? 'scale-110 text-black' : 'text-gray-500 dark:text-gray-400 group-hover:text-white'}`}
                                 />
                             )}
                             <span>{child.label}</span>
@@ -404,19 +393,12 @@ const Sidebar = () => {
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between px-6 py-2 border-b border-gray-100 dark:border-gray-800">
                         <Link
-                            href="/farmerDashboard"
+                            href="/superadminDashboard"
                             className="flex items-center transition-all duration-300 main-logo shrink-0 hover:scale-105"
                             onMouseEnter={() => setIsLogoHovered(true)}
                             onMouseLeave={() => setIsLogoHovered(false)}
                         >
-                            <Image
-                                src="/assets/images/logo.png"
-                                alt="logo"
-                                width={isLogoHovered ? 155 : 150}
-                                height={40}
-                                className="transition-all duration-300"
-                                priority
-                            />
+                            <Image src="/assets/images/logo.png" alt="logo" width={isLogoHovered ? 155 : 150} height={40} className="transition-all duration-300" priority />
                         </Link>
 
                         <button
@@ -439,29 +421,24 @@ const Sidebar = () => {
                                 const isItemActive = selectedSidebarSection === item.path || hoveredItem === item.path || isMenuOpen;
 
                                 return (
-                                    <li
-                                        key={item.path}
-                                        onMouseEnter={() => setHoveredItem(item.path)}
-                                        onMouseLeave={() => setHoveredItem(null)}
-                                        className="sidebar-menu-item"
-                                    >
+                                    <li key={item.path} onMouseEnter={() => setHoveredItem(item.path)} onMouseLeave={() => setHoveredItem(null)} className="sidebar-menu-item">
                                         {item.children ? (
                                             <>
                                                 <button
                                                     onClick={() => toggleMenu(item.path)}
                                                     className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 
-                                                        ${isItemActive
-                                                            ? 'bg-primary-50 dark:bg-gray-800 shadow-sm scale-[1.02]'
-                                                            : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                        ${
+                                                            isItemActive ? 'bg-primary-50 dark:bg-gray-800 shadow-sm scale-[1.02]' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                                                         } group relative overflow-hidden`}
                                                 >
                                                     <div className="flex items-center">
                                                         {item.icon && renderMenuIcon(item.icon, isItemActive)}
                                                         <span
                                                             className={`transition-all duration-200 
-                                                                ${isItemActive
-                                                                    ? 'text-primary-600 dark:text-primary-400 font-semibold'
-                                                                    : 'text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400'
+                                                                ${
+                                                                    isItemActive
+                                                                        ? 'text-primary-600 dark:text-primary-400 font-semibold'
+                                                                        : 'text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400'
                                                                 }`}
                                                         >
                                                             {item.label}
@@ -478,9 +455,10 @@ const Sidebar = () => {
                                             <Link
                                                 href={item.path}
                                                 className={`flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 
-                                                    ${selectedSidebarSection === item.path || hoveredItem === item.path
-                                                        ? 'bg-blue-100 dark:bg-gray-800 shadow-sm scale-[1.02]'
-                                                        : 'hover:bg-blue-100 dark:hover:bg-gray-800'
+                                                    ${
+                                                        selectedSidebarSection === item.path || hoveredItem === item.path
+                                                            ? 'bg-blue-100 dark:bg-gray-800 shadow-sm scale-[1.02]'
+                                                            : 'hover:bg-blue-100 dark:hover:bg-gray-800'
                                                     } group menu-item-hover`}
                                                 onClick={() => handleMenuClick(item.path)}
                                                 onMouseEnter={() => setHoveredItem(item.path)}
@@ -489,9 +467,10 @@ const Sidebar = () => {
                                                 {item.icon && renderMenuIcon(item.icon, selectedSidebarSection === item.path || hoveredItem === item.path)}
                                                 <span
                                                     className={`transition-all duration-200 
-                                                        ${selectedSidebarSection === item.path || hoveredItem === item.path
-                                                            ? 'text-primary-600 dark:text-primary-400 font-semibold'
-                                                            : 'text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400'
+                                                        ${
+                                                            selectedSidebarSection === item.path || hoveredItem === item.path
+                                                                ? 'text-primary-600 dark:text-primary-400 font-semibold'
+                                                                : 'text-gray-700 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400'
                                                         }`}
                                                 >
                                                     {item.label}
